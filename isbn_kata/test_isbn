@@ -1,0 +1,29 @@
+require_relative 'IsbnClass_class.rb'
+require 'minitest/autorun'
+
+
+class TestIsbnClass < Minitest::Test
+
+	def test_isbn13_valid
+		assert_equal(:isbn13pass, IsbnClass.new('9780470059029').isbn_check) 
+		assert_equal(:isbn13pass, IsbnClass.new('978-0-13-149505-0').isbn_check)
+		assert_equal(:isbn13pass, IsbnClass.new('978 0 471 48648 0').isbn_check)
+	end
+
+	def test_isbn10_valid
+		assert_equal(:isbn10pass, IsbnClass.new('0471958697').isbn_check) 
+		assert_equal(:isbn10pass, IsbnClass.new('0-321-14653-0').isbn_check)
+		assert_equal(:isbn10pass, IsbnClass.new('877195869x').isbn_check)
+	end
+
+	def test_isbn_not_valid
+		assert_equal(:isbnfail, IsbnClass.new('4780470059029').isbn_check) 
+		assert_equal(:isbnfail, IsbnClass.new('0-321@14653-0').isbn_check)
+		assert_equal(:isbnfail, IsbnClass.new('877195x869').isbn_check)
+		assert_equal(:isbnfail, IsbnClass.new('').isbn_check)
+		assert_equal(:isbnfail, IsbnClass.new('  ').isbn_check)
+		assert_equal(:isbnfail, IsbnClass.new('-').isbn_check)
+	end
+
+end
+
