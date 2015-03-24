@@ -1,0 +1,11 @@
+Aims are detailed in the Aims file.
+
+The main file is isbn_master. 
+It requires IsbnClass and CsvLineClass, together with an input csv file. 
+It will generate as output a csv file recording if the input strings are valid or not.
+
+Isbn_test runs a suite of tests for the IsbnClass.
+
+Generate_isbn creates a file containing valid isbn numbers. 
+A lazy enumarator is used to generate potential isbn numbers, that are then constrained by first digit.
+A given number of output isbn numbers is defined.
