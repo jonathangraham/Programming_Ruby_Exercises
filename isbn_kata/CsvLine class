@@ -1,0 +1,14 @@
+class CsvLine
+	attr_reader :isbn, :isbn_check, :time_checked
+	def initialize(isbn, isbn_check, time_checked)
+		@isbn = isbn
+		@isbn_check = isbn_check
+		@time_checked = time_checked
+	end
+
+
+	def to_s
+		@isbn.to_s + ', ' + @isbn_check.to_s + ', ' + @time_checked.to_s + "\n"
+	end
+		 
+end
