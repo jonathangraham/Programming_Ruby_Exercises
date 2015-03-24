@@ -1,0 +1,39 @@
+require_relative "IsbnClass_class.rb"
+require_relative "CsvLine_class.rb"
+require 'csv'
+
+
+isbn_instance_arr = [] # new array to hold the isbn strings
+
+#process incoming file to get array of isbn strings
+CSV.foreach('input_isbn_file.csv', headers: true) do |row|
+	isbn_instance = IsbnClass.new(row["isbn"])
+	isbn_instance_arr << isbn_instance 
+end
+
+
+csv_arr = [] # new csvline array - for output file
+
+#process isbn_string array and create new array of csv_lines
+#option to change the isbn_check_statement wording
+isbn_instance_arr.each do |isbn_string|
+
+	isbn_check_statement = 'valid isbn13' if isbn_string.isbn_check == :isbn13pass
+	isbn_check_statement = 'valid isbn10' if isbn_string.isbn_check == :isbn10pass
+	isbn_check_statement = 'not valid isbn' if isbn_string.isbn_check == :isbnfail
+
+	csv_line = CsvLine.new(isbn_string, isbn_check_statement, Time.now)
+	csv_arr << csv_line
+end
+
+
+#create file, add header line, and write checked_isbn to file, adding line number at front of each line
+#File.open with block auto closes
+File.open("output_isbn_file.csv", 'w') do |f|
+    f.puts 'isbn, isbn_check, time_checked'
+
+	csv_arr.map.with_index do |element, index| 
+	f << (index + 1).to_s + '. ' 
+	f << element
+	end
+end
