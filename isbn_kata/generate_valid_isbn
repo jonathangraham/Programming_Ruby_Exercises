@@ -1,0 +1,61 @@
+#aim 
+#****************************************************************************************
+#generate valid isbn13 numbers, that are constrained to start with a specified digit
+
+#constrain initial digit by setting INITIAL_DIGIT
+
+#constrain quantity of isbn13 numbers by setting QUANTITY_OF_ISBN_NUMBERS
+
+#valid isbn13 numbers will be written to file valid_isbn13.csv
+#****************************************************************************************
+
+#****************************************************************************************
+#Set requirements
+INITIAL_DIGIT = 1
+
+QUANTITY_OF_ISBN_NUMBERS = 20
+
+#****************************************************************************************
+
+#lazy enumerator, so will stop generating when specified quantity of output is met
+#for eachinstance of the enumerator:
+#generate array containing 12 random digits
+#do sumcheck for isbn13 and add result to array
+#yield result as a string
+def isbn13_generator
+	Enumerator.new do |potential_isbn13|
+	loop do
+x = []
+x << rand(10) while x.count < 12
+x << (10 - x.map.with_index { |element, index| element * ((index%2 * 2) + 1) }.inject(:+)%10)%10
+potential_isbn13.yield(x.join.to_s)
+end
+end.lazy
+end
+
+#function to result true if the input has defined initial digit
+#convert input isbn13_generator string to integer
+#returns true if integer is within range for a number starting with defined initial digit
+#eg if initial digit selected is 1, then isbn must fall between 1000000000000 and 2000000000000
+def isbn_initial(n)
+	n = n.to_i
+	initial_digit = INITIAL_DIGIT
+	n > (initial_digit * 10 ** 12) && n < ((initial_digit + 1) * 10 ** 12)
+end
+
+
+#create output file, with 'isbn' on first line
+#write valid isbn13 numbers, constrained to first digit and quantity, on separate lines
+File.open("valid_isbn13.csv", 'w') do |f|
+    f.puts 'isbn'
+
+	isbn13_generator
+	.select {|i| isbn_initial(i)}
+	.first(QUANTITY_OF_ISBN_NUMBERS)
+	.map do |element| 
+	f << element.to_s + "\n"
+	end
+end
+
+
+
