@@ -34,7 +34,11 @@ def player_turn(board)
 	a = gets.chomp.to_i
 	if board[a-1] == ' '
 		board[a-1].replace 'X'
+		if draw?(board) == true
+			puts 'draw, game over'
+		else
 		computer_turn(board)
+	end
 	else
 		puts "not a valid space!"
 		player_turn(board)
@@ -45,10 +49,19 @@ def computer_turn(board)
 	a = rand(9)
 	if board[a] == ' '
 		board[a].replace 'O'
+		puts "computer plays position #{a+1}"
+		if draw?(board) == true
+			puts 'draw, game over'
+		else
 		player_turn(board)
+	end
 	else
 		computer_turn(board)
 	end
+end
+
+def draw?(board)
+	board.count(' ') == 0
 end
 
 
