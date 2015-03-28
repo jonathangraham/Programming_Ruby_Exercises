@@ -3,17 +3,17 @@ board_positions = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
  
 def print_board(board)
-puts
-puts '   |   |'
-puts " #{board[0]} | #{board[1]} | #{board[2]} "
-puts '___|___|___'
-puts '   |   |'
-puts " #{board[3]} | #{board[4]} | #{board[5]} "
-puts '___|___|___'
-puts '   |   |'
-puts " #{board[6]} | #{board[7]} | #{board[8]} "
-puts '   |   |'
-puts
+	puts
+	puts '   |   |'
+	puts " #{board[0]} | #{board[1]} | #{board[2]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{board[3]} | #{board[4]} | #{board[5]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{board[6]} | #{board[7]} | #{board[8]} "
+	puts '   |   |'
+	puts
 end
 
 print_board(board_positions)
@@ -23,11 +23,26 @@ puts 'Lets start a new game'
 
 cur_board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 
-print_board(cur_board)
 
-puts 'Enter position to play'
-a = gets.chomp.to_i
 
-cur_board[a-1].replace 'X'
+puts 'Player is X, computer is O. Player to Start.'
+
+
+def player_turn(board)
+	print_board(board)
+	puts 'Enter position to play'
+	a = gets.chomp.to_i
+	if board[a-1] == ' '
+		board[a-1].replace 'X'
+		#computer_turn(board)
+	else
+		puts "not a valid space!"
+		player_turn(board)
+	end
+end
+
+player_turn(cur_board)
+
+
 
 print_board(cur_board)
