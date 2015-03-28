@@ -34,12 +34,23 @@ def player_turn(board)
 	a = gets.chomp.to_i
 	if board[a-1] == ' '
 		board[a-1].replace 'X'
-		#computer_turn(board)
+		computer_turn(board)
 	else
 		puts "not a valid space!"
 		player_turn(board)
 	end
 end
+
+def computer_turn(board)
+	a = rand(9)
+	if board[a] == ' '
+		board[a].replace 'O'
+		player_turn(board)
+	else
+		computer_turn(board)
+	end
+end
+
 
 player_turn(cur_board)
 
