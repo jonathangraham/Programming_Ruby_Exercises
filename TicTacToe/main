@@ -1,3 +1,7 @@
+class Competitor
+	attr_accessor :letter
+end
+
 puts 'These are the TicTacToe positions'
 board_positions = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
@@ -17,7 +21,6 @@ end
 
 print_board(board_positions)
 
-
 puts 'Lets start a new game'
 
 board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
@@ -25,8 +28,8 @@ PotentialWinningLines = [[board[0],board[1],board[2]],[board[3],board[4],board[5
 Corners = [board[0], board[2], board[6], board[8]]
 Centre = board[4]
 Edges = [board[1], board[3], board[5], board[7]]
-
-puts 'Player is X, computer is O.'
+Player = Competitor.new
+Computer = Competitor.new
 
 
 def player_turn(board)
@@ -34,7 +37,7 @@ def player_turn(board)
 	puts 'Enter position to play'
 	a = gets.chomp.to_i
 	if board[a-1] == ' '
-		board[a-1].replace 'X'
+		board[a-1].replace(Player.letter)
 	else
 		puts "not a valid space!"
 		player_turn(board)
@@ -52,20 +55,16 @@ end
 
 def computer_turn(board)
 	print_board(board)
-	if board.count(' ') == 9
-		board[0].replace 'O'
-		puts "computer plays position 1"
-	elsif board.count(' ') == 8
-		respond_first_play(board)
+	puts 'Computer plays:'
+	if firstPlay(board)
 	elsif winningMove
 	elsif blockingMove
 	elsif winningFork
 	elsif blockingFork
-	else
-		a = rand(9)
-		a = rand(9) while board[a] != ' '
-			board[a].replace 'O'
-			puts "computer plays position #{a+1}"
+	elsif playCentre
+	elsif oppCorner
+	elsif playCorner
+	else playEdge
 	end
 	if win?(board) == true
 		print_board(board)
@@ -80,9 +79,13 @@ end
 
 def win?(board)
 	arrayOfBools = PotentialWinningLines.map do |innerArray|
-		allCharsSame?(innerArray, 'X') || allCharsSame?(innerArray, 'O')   
+		allCharsSame?(innerArray, Player.letter) || allCharsSame?(innerArray, Computer.letter)   
 	end
 	arrayOfBools.include? true
+end
+
+def draw?(board)
+	board.count(' ') == 0
 end
 
 def allCharsSame?(arr,findChar)
@@ -90,35 +93,63 @@ def allCharsSame?(arr,findChar)
 	matchedCharsFound.length == arr.length
 end
 
+def firstPlay(board)
+	if board.count(' ') == 9
+		board[0].replace Computer.letter
+		true
+	end
+end
+
 def winningMove
-	oneToWin('O')
+	oneToWin(Computer.letter)
 end
 
 def blockingMove
-	oneToWin('X')
+	oneToWin(Player.letter)
 end
 
 def winningFork
-	forkMove('O')
+	forkMove(Computer.letter)
 end
 
 def blockingFork
-	forkMove('X')
+	forkMove(Player.letter)
 end
 
-def forkMove(findChar)
-	#is 'O' in two corner spaces?
-	markedCorners = Corners.select{|x| x == findChar} 
-	if markedCorners.length >= 2 && emptyCorners.length > 0
-		if Centre == ' ' && emptyCorners.length > 1
-			Centre.replace 'O'
-			true
-		elsif emptyCorners.length > 1 && emptyEdges.length > 0
-			emptyEdges[0].replace 'O'
-		else 
-		emptyCorners[0].replace 'O'
+def playCentre
+	if Centre == ' '
+		Centre.replace Computer.letter
 		true
-		end
+	end
+end
+
+def oppCorner
+	if Corners[0] == Player.letter && Corners[3] == ' '
+		Corners[3].replace Computer.letter
+		true 
+	elsif Corners[1] == Player.letter && Corners[2] == ' '
+		Corners[2].replace Computer.letter
+		true
+	elsif Corners[2] == Player.letter && Corners[1] == ' '
+		Corners[1].replace Computer.letter
+		true
+	elsif Corners[3] == Player.letter && Corners[0] == ' '
+		Corners[3].replace Computer.letter
+		true
+	end
+end
+
+def playCorner
+	if emptyCorners.length > 0
+		emptyCorners[0].replace Computer.letter
+		true
+	end
+end
+
+def playEdge
+	if emptyEdges.length > 0
+		emptyEdges[0].replace Computer.letter
+		true
 	end
 end
 
@@ -137,7 +168,7 @@ def oneToWin(player)
 	if arrayOfBools.include? true
 		winningLine = arrayOfBools.index{|x|x == true}
 		spaceInWinningLine = PotentialWinningLines[winningLine].index{|x|x == ' '}
-		PotentialWinningLines[winningLine][spaceInWinningLine].replace 'O'
+		PotentialWinningLines[winningLine][spaceInWinningLine].replace Computer.letter
 		true
 	end
 end
@@ -147,30 +178,35 @@ def twoCharsSame?(arr,findChar)
 	matchedCharsFound.length == arr.length - 1
 end
 
-def draw?(board)
-	board.count(' ') == 0
-end
-
-def respond_first_play(board)
-	if board[4] == 'X'
-		a = 0
-	else 
-		a = 4
+def forkMove(findChar)
+	markedCorners = Corners.select{|x| x == findChar} 
+	if markedCorners.length >= 2 && emptyCorners.length > 0
+		if Centre == ' ' && emptyCorners.length > 1
+			Centre.replace Computer.letter
+			true
+		elsif emptyCorners.length > 1 && emptyEdges.length > 0
+			emptyEdges[0].replace Computer.letter
+		else 
+		emptyCorners[0].replace Computer.letter
+		true
+		end
 	end
-	board[a].replace 'O'
-	puts "computer plays position #{a+1}"
-	return a
 end
 
 def start(board)
 	x = rand(2)
 	if x == 0
-		puts 'player starts'
+		Player.letter = "X"
+		Computer.letter = "O"
+		puts "Player starts. Player is #{Player.letter}, Computer is #{Computer.letter}."
 		player_turn(board)
 	else
-		puts 'computer starts'
+		Player.letter = "O"
+		Computer.letter = "X"
+		puts "Computer starts. Player is #{Player.letter}, Computer is #{Computer.letter}."
 		computer_turn(board)
 	end
 end
+
 
 start(board)
