@@ -20,10 +20,11 @@ print_board(board_positions)
 
 puts 'Lets start a new game'
 
-cur_board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 
+PotentialWinningLines = [[board[0],board[1],board[2]],[board[3],board[4],board[5]],[board[6],board[7],board[8]],[board[0],board[3],board[6]],[board[1],board[4],board[7]],[board[2],board[5],board[8]],[board[0],board[4],board[8]],[board[2],board[4],board[6]]]
 
-#puts 'Player is X, computer is O. Player to Start.'
+puts 'Player is X, computer is O.'
 
 
 def player_turn(board)
@@ -32,80 +33,83 @@ def player_turn(board)
 	a = gets.chomp.to_i
 	if board[a-1] == ' '
 		board[a-1].replace 'X'
-		if win?(board) == true
-			puts 'you win!'
-		elsif draw?(board) == true
-			puts 'draw, game over'
-		else
-		computer_turn(board)
-	end
 	else
 		puts "not a valid space!"
 		player_turn(board)
 	end
-end
-
-def computer_turn(board)
-	if board.count(' ') == 9
-		board[0].replace 'O'
-		player_turn(board)
-	elsif board.count(' ') == 8
-		respond_first_play(board)
-	else
-	a = rand(9)
-	if board[a] == ' '
-		board[a].replace 'O'
-		puts "computer plays position #{a+1}"
-		if win?(board) == true
-			puts 'computer wins'
-		elsif draw?(board) == true
-			puts 'draw, game over'
-		else
-		player_turn(board)
-	end
+	if win?(board) == true
+		puts 'you win!'
+	elsif draw?(board) == true
+		puts 'draw, game over'
 	else
 		computer_turn(board)
 	end
 end
-end
 
-def win?(board)
-	if [board[0], board[1], board[2]].count('X') == 3
-		true 
-	elsif [board[3], board[4], board[5]].count('X') == 3 
-		true
-	elsif [board[6], board[7], board[8]].count('X') == 3 
-		true
-	elsif [board[0], board[3], board[6]].count('X') == 3
-		true
-	elsif [board[1], board[4], board[7]].count('X') == 3
-		true
-	elsif [board[2], board[5], board[8]].count('X') == 3
-		true 
-	elsif [board[0], board[4], board[8]].count('X') == 3
-		true
-	elsif [board[2], board[4], board[6]].count('X') == 3
-		true
-	elsif [board[0], board[1], board[2]].count('O') == 3
-		true 
-	elsif [board[3], board[4], board[5]].count('O') == 3
-		true 
-	elsif [board[6], board[7], board[8]].count('O') == 3 
-		true
-	elsif [board[0], board[3], board[6]].count('O') == 3
-		true
-	elsif [board[1], board[4], board[7]].count('O') == 3
-		true
-	elsif [board[2], board[5], board[8]].count('O') == 3
-		true 
-	elsif [board[0], board[4], board[8]].count('O') == 3
-		true
-	elsif [board[2], board[4], board[6]].count('O') == 3
-		true    
-	else false
+def computer_turn(board)
+	print_board(board)
+	if board.count(' ') == 9
+		board[0].replace 'O'
+		puts "computer plays position 1"
+	elsif board.count(' ') == 8
+		respond_first_play(board)
+	elsif oneToWin(board)
+	elsif oneToBlock(board)
+	else
+		a = rand(9)
+		a = rand(9) while board[a] != ' '
+			board[a].replace 'O'
+			puts "computer plays position #{a+1}"
+	end
+	if win?(board) == true
+		puts 'computer wins'
+	elsif draw?(board) == true
+		puts 'draw, game over'
+	else
+		player_turn(board)
 	end
 end
 
+def win?(board)
+	arrayOfBools = PotentialWinningLines.map do |innerArray|
+		allCharsSame?(innerArray, 'X') || allCharsSame?(innerArray, 'O')   
+	end
+	arrayOfBools.include? true
+end
+
+def allCharsSame?(arr,findChar)
+	matchedCharsFound = arr.select{|x| x == findChar}
+	matchedCharsFound.length == arr.length
+end
+
+def oneToWin(board)
+	arrayOfBools = PotentialWinningLines.map do |innerArray|
+		twoCharsSame?(innerArray, 'O') if innerArray.include? (' ') 
+	end
+	if arrayOfBools.include? true
+		winningLine = arrayOfBools.index{|x|x == true}
+		spaceInWinningLine = PotentialWinningLines[winningLine].index{|x|x == ' '}
+		PotentialWinningLines[winningLine][spaceInWinningLine].replace 'O'
+		true
+	end
+end
+
+def oneToBlock(board)
+	arrayOfBools = PotentialWinningLines.map do |innerArray|
+		twoCharsSame?(innerArray, 'X') if innerArray.include? (' ') 
+	end
+	if arrayOfBools.include? true
+		winningLine = arrayOfBools.index{|x|x == true}
+		spaceInWinningLine = PotentialWinningLines[winningLine].index{|x|x == ' '}
+		PotentialWinningLines[winningLine][spaceInWinningLine].replace 'O'
+		true
+	end
+end
+
+def twoCharsSame?(arr,findChar)
+	matchedCharsFound = arr.select{|x| x == findChar}
+	matchedCharsFound.length == arr.length - 1
+end
 
 def draw?(board)
 	board.count(' ') == 0
@@ -119,7 +123,7 @@ def respond_first_play(board)
 	end
 	board[a].replace 'O'
 	puts "computer plays position #{a+1}"
-	player_turn(board)
+	return a
 end
 
 def start(board)
@@ -133,6 +137,4 @@ def start(board)
 	end
 end
 
-start(cur_board)
-
-print_board(cur_board)
+start(board)
