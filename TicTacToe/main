@@ -2,27 +2,7 @@ class Competitor
 	attr_accessor :letter
 end
 
-puts 'These are the TicTacToe positions'
-board_positions = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-def print_board(board)
-	puts
-	puts '   |   |'
-	puts " #{board[0]} | #{board[1]} | #{board[2]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{board[3]} | #{board[4]} | #{board[5]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{board[6]} | #{board[7]} | #{board[8]} "
-	puts '   |   |'
-	puts
-end
-
-print_board(board_positions)
-
-puts 'Lets start a new game'
-
+Board_positions = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 PotentialWinningLines = [[board[0],board[1],board[2]],[board[3],board[4],board[5]],[board[6],board[7],board[8]],[board[0],board[3],board[6]],[board[1],board[4],board[7]],[board[2],board[5],board[8]],[board[0],board[4],board[8]],[board[2],board[4],board[6]]]
 Corners = [board[0], board[2], board[6], board[8]]
@@ -30,7 +10,6 @@ Centre = board[4]
 Edges = [board[1], board[3], board[5], board[7]]
 Player = Competitor.new
 Computer = Competitor.new
-
 
 def player_turn(board)
 	print_board(board)
@@ -42,14 +21,10 @@ def player_turn(board)
 		puts "not a valid space!"
 		player_turn(board)
 	end
-	if win?(board) == true
-		print_board(board)
+	if win?(board)
 		puts 'you win!'
-	elsif draw?(board) == true
-		print_board(board)
-		puts 'draw, game over'
-	else
-		computer_turn(board)
+	elsif draw?(board)
+	else computer_turn(board)
 	end
 end
 
@@ -66,14 +41,10 @@ def computer_turn(board)
 	elsif playCorner
 	else playEdge
 	end
-	if win?(board) == true
-		print_board(board)
+	if win?(board)
 		puts 'computer wins'
-	elsif draw?(board) == true
-		print_board(board)
-		puts 'draw, game over'
-	else
-		player_turn(board)
+	elsif draw?(board)
+	else player_turn(board)
 	end
 end
 
@@ -81,16 +52,23 @@ def win?(board)
 	arrayOfBools = PotentialWinningLines.map do |innerArray|
 		allCharsSame?(innerArray, Player.letter) || allCharsSame?(innerArray, Computer.letter)   
 	end
-	arrayOfBools.include? true
-end
-
-def draw?(board)
-	board.count(' ') == 0
+	if arrayOfBools.include? true 
+		print_board(board)
+		true
+	end
 end
 
 def allCharsSame?(arr,findChar)
 	matchedCharsFound = arr.select{|x| x == findChar}
 	matchedCharsFound.length == arr.length
+end
+
+def draw?(board)
+	if board.count(' ') == 0
+		print_board(board)
+		puts 'draw, game over'
+		true
+	end
 end
 
 def firstPlay(board)
@@ -153,14 +131,6 @@ def playEdge
 	end
 end
 
-def emptyCorners
-	Corners.select{|x| x == ' '}
-end
-
-def emptyEdges
-	Edges.select{|x| x == ' '}
-end
-
 def oneToWin(player)
 	arrayOfBools = PotentialWinningLines.map do |innerArray|
 		twoCharsSame?(innerArray, player) if innerArray.include? (' ') 
@@ -193,7 +163,18 @@ def forkMove(findChar)
 	end
 end
 
+def emptyCorners
+	Corners.select{|x| x == ' '}
+end
+
+def emptyEdges
+	Edges.select{|x| x == ' '}
+end
+
 def start(board)
+	puts 'These are the TicTacToe positions'
+	print_board(Board_positions)
+	puts 'Lets start a new game'
 	x = rand(2)
 	if x == 0
 		Player.letter = "X"
@@ -208,5 +189,18 @@ def start(board)
 	end
 end
 
+def print_board(board)
+	puts
+	puts '   |   |'
+	puts " #{board[0]} | #{board[1]} | #{board[2]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{board[3]} | #{board[4]} | #{board[5]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{board[6]} | #{board[7]} | #{board[8]} "
+	puts '   |   |'
+	puts
+end
 
 start(board)
