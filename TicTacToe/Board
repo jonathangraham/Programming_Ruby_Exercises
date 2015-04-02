@@ -1,0 +1,51 @@
+class Board
+	attr_accessor :data
+	
+	def initialize() 
+		@data = [' ', ' ', ' ', ' ', ' ', ' ',' ', ' ', ' ']
+	end
+
+	def potential_winning_lines 
+		[[@data[0],@data[1],@data[2]],[@data[3],@data[4],@data[5]],[@data[6],@data[7],@data[8]],[@data[0],@data[3],@data[6]],[@data[1],@data[4],@data[7]],[@data[2],@data[5],@data[8]],[@data[0],@data[4],@data[8]],[@data[2],@data[4],@data[6]]]
+	end
+
+	def print_board()
+	puts
+	puts '   |   |'
+	puts " #{@data[0]} | #{@data[1]} | #{@data[2]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{@data[3]} | #{@data[4]} | #{@data[5]} "
+	puts '___|___|___'
+	puts '   |   |'
+	puts " #{@data[6]} | #{@data[7]} | #{@data[8]} "
+	puts '   |   |'
+	puts
+	end
+
+	def valid_move?(suggested_position)
+		@data[suggested_position - 1] == ' '
+	end
+
+	def update(suggested_position, player)
+		@data[suggested_position - 1].replace player
+	end
+
+	def draw?()
+		@data.count(' ') == 0
+	end
+
+	def win?()
+		arrayOfBools = potential_winning_lines.map do |innerArray|
+			allCharsSame?(innerArray, 'X') || allCharsSame?(innerArray, 'O')   
+		end
+		if arrayOfBools.include? true 
+			true
+		end
+	end
+
+	def allCharsSame?(arr,findChar)
+		matchedCharsFound = arr.select{|x| x == findChar}
+		matchedCharsFound.length == arr.length
+	end
+end
