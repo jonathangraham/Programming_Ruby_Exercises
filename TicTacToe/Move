@@ -1,0 +1,24 @@
+class Move
+	attr_accessor :move
+	def initialize()
+		@move = move
+	end	
+
+	def next_move(name)
+		if name == 'Computer'
+			computer_move
+		else
+			human_move
+		end
+	end
+
+	def human_move
+		puts 'Enter position to play'
+		@move = gets.to_i
+	end
+
+	def computer_move
+		@move = rand(9)
+	end
+
+end
