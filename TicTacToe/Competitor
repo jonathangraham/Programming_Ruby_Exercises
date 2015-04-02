@@ -1,0 +1,7 @@
+class Competitor
+	attr_accessor :letter, :name
+	def initialize(letter, name) 
+		@letter = letter
+		@name = name
+	end
+end
