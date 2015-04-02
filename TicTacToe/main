@@ -1,206 +1,63 @@
-class Competitor
-	attr_accessor :letter
+require_relative 'Board'
+require_relative 'Competitor'
+require_relative 'Move'
+
+def play_game?
+	puts 'Would you like to play Tic Tac Toe? Type Y to play.'
+	if gets.chomp.upcase == 'Y' 
+		true
+	else 
+		puts 'Goodbye!'
+		exit
+	end
 end
 
-Board_positions = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
-PotentialWinningLines = [[board[0],board[1],board[2]],[board[3],board[4],board[5]],[board[6],board[7],board[8]],[board[0],board[3],board[6]],[board[1],board[4],board[7]],[board[2],board[5],board[8]],[board[0],board[4],board[8]],[board[2],board[4],board[6]]]
-Corners = [board[0], board[2], board[6], board[8]]
-Centre = board[4]
-Edges = [board[1], board[3], board[5], board[7]]
-Player = Competitor.new
-Computer = Competitor.new
-
-def player_turn(board)
-	print_board(board)
-	puts 'Enter position to play'
-	a = gets.chomp.to_i
-	if board[a-1] == ' '
-		board[a-1].replace(Player.letter)
+def get_number_players
+	puts 'How many players? Choose 1 or 2'
+	if gets.to_i == 1
+		@player1 = Competitor.new('X', 'Human')
+		@player2 = Competitor.new('O', 'Computer')
+		puts "#{@player1.name} is #{@player1.letter}, #{@player2.name} is #{@player2.letter}"
 	else
-		puts "not a valid space!"
-		player_turn(board)
-	end
-	if win?(board)
-		puts 'you win!'
-	elsif draw?(board)
-	else computer_turn(board)
+		@player1 = Competitor.new('X', 'Player 1')
+		@player2 = Competitor.new('O', 'Player 2')
+		puts 'Player 1 is X, Player 2 is O'
 	end
 end
 
-def computer_turn(board)
-	print_board(board)
-	puts 'Computer plays:'
-	if firstPlay(board)
-	elsif winningMove
-	elsif blockingMove
-	elsif winningFork
-	elsif blockingFork
-	elsif playCentre
-	elsif oppCorner
-	elsif playCorner
-	else playEdge
-	end
-	if win?(board)
-		puts 'computer wins'
-	elsif draw?(board)
-	else player_turn(board)
+def main
+	play_game?
+	@initial = Board.new
+	@nextmove = Move.new
+	get_number_players
+	players = [@player1, @player2].cycle
+	loop do
+		current_player = players.next
+	  	play_turn(current_player.name, current_player.letter)
+		main if game_end?(current_player.name)
 	end
 end
 
-def win?(board)
-	arrayOfBools = PotentialWinningLines.map do |innerArray|
-		allCharsSame?(innerArray, Player.letter) || allCharsSame?(innerArray, Computer.letter)   
+def play_turn(name, letter)
+	@initial.print_board
+	puts "#{name} to go next"
+	potential_position = @nextmove.next_move(name)
+	until @initial.valid_move?(potential_position) do
+	  	 potential_position = @nextmove.next_move(name)
 	end
-	if arrayOfBools.include? true 
-		print_board(board)
-		true
-	end
+	@initial.update(potential_position, letter)
 end
 
-def allCharsSame?(arr,findChar)
-	matchedCharsFound = arr.select{|x| x == findChar}
-	matchedCharsFound.length == arr.length
+def game_end?(current_player)
+	if @initial.win?
+	  	@initial.print_board
+	  	puts "#{current_player} wins!"
+	  	true
+	elsif @initial.draw?
+	  	@initial.print_board
+	  	puts "draw"
+	  	true
+  	end
 end
 
-def draw?(board)
-	if board.count(' ') == 0
-		print_board(board)
-		puts 'draw, game over'
-		true
-	end
-end
-
-def firstPlay(board)
-	if board.count(' ') == 9
-		board[0].replace Computer.letter
-		true
-	end
-end
-
-def winningMove
-	oneToWin(Computer.letter)
-end
-
-def blockingMove
-	oneToWin(Player.letter)
-end
-
-def winningFork
-	forkMove(Computer.letter)
-end
-
-def blockingFork
-	forkMove(Player.letter)
-end
-
-def playCentre
-	if Centre == ' '
-		Centre.replace Computer.letter
-		true
-	end
-end
-
-def oppCorner
-	if Corners[0] == Player.letter && Corners[3] == ' '
-		Corners[3].replace Computer.letter
-		true 
-	elsif Corners[1] == Player.letter && Corners[2] == ' '
-		Corners[2].replace Computer.letter
-		true
-	elsif Corners[2] == Player.letter && Corners[1] == ' '
-		Corners[1].replace Computer.letter
-		true
-	elsif Corners[3] == Player.letter && Corners[0] == ' '
-		Corners[3].replace Computer.letter
-		true
-	end
-end
-
-def playCorner
-	if emptyCorners.length > 0
-		emptyCorners[0].replace Computer.letter
-		true
-	end
-end
-
-def playEdge
-	if emptyEdges.length > 0
-		emptyEdges[0].replace Computer.letter
-		true
-	end
-end
-
-def oneToWin(player)
-	arrayOfBools = PotentialWinningLines.map do |innerArray|
-		twoCharsSame?(innerArray, player) if innerArray.include? (' ') 
-	end
-	if arrayOfBools.include? true
-		winningLine = arrayOfBools.index{|x|x == true}
-		spaceInWinningLine = PotentialWinningLines[winningLine].index{|x|x == ' '}
-		PotentialWinningLines[winningLine][spaceInWinningLine].replace Computer.letter
-		true
-	end
-end
-
-def twoCharsSame?(arr,findChar)
-	matchedCharsFound = arr.select{|x| x == findChar}
-	matchedCharsFound.length == arr.length - 1
-end
-
-def forkMove(findChar)
-	markedCorners = Corners.select{|x| x == findChar} 
-	if markedCorners.length >= 2 && emptyCorners.length > 0
-		if Centre == ' ' && emptyCorners.length > 1
-			Centre.replace Computer.letter
-			true
-		elsif emptyCorners.length > 1 && emptyEdges.length > 0
-			emptyEdges[0].replace Computer.letter
-		else 
-		emptyCorners[0].replace Computer.letter
-		true
-		end
-	end
-end
-
-def emptyCorners
-	Corners.select{|x| x == ' '}
-end
-
-def emptyEdges
-	Edges.select{|x| x == ' '}
-end
-
-def start(board)
-	puts 'These are the TicTacToe positions'
-	print_board(Board_positions)
-	puts 'Lets start a new game'
-	x = rand(2)
-	if x == 0
-		Player.letter = "X"
-		Computer.letter = "O"
-		puts "Player starts. Player is #{Player.letter}, Computer is #{Computer.letter}."
-		player_turn(board)
-	else
-		Player.letter = "O"
-		Computer.letter = "X"
-		puts "Computer starts. Player is #{Player.letter}, Computer is #{Computer.letter}."
-		computer_turn(board)
-	end
-end
-
-def print_board(board)
-	puts
-	puts '   |   |'
-	puts " #{board[0]} | #{board[1]} | #{board[2]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{board[3]} | #{board[4]} | #{board[5]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{board[6]} | #{board[7]} | #{board[8]} "
-	puts '   |   |'
-	puts
-end
-
-start(board)
+main
