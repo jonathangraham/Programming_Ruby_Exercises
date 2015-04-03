@@ -11,15 +11,16 @@ class Board
 
 	def print_board()
 	puts
-	puts '   |   |'
-	puts " #{@data[0]} | #{@data[1]} | #{@data[2]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{@data[3]} | #{@data[4]} | #{@data[5]} "
-	puts '___|___|___'
-	puts '   |   |'
-	puts " #{@data[6]} | #{@data[7]} | #{@data[8]} "
-	puts '   |   |'
+	puts 'Current Board:      '									'Board Positions:'
+	puts '   |   |            '									'   |   |   '	
+	puts " #{@data[0]} | #{@data[1]} | #{@data[2]}          "					' 1 | 2 | 3 '
+	puts '___|___|___         '									'___|___|___'
+	puts '   |   |            '									'   |   |   '
+	puts " #{@data[3]} | #{@data[4]} | #{@data[5]}          "					' 4 | 5 | 6 '
+	puts '___|___|___         '									'___|___|___'
+	puts '   |   |            '									'   |   |   '	
+	puts " #{@data[6]} | #{@data[7]} | #{@data[8]}          "					' 7 | 8 | 9 '
+	puts '   |   |            '									'   |   |   '
 	puts
 	end
 
