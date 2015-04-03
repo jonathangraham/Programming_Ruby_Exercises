@@ -2,6 +2,21 @@ require_relative 'Board'
 require_relative 'Competitor'
 require_relative 'Move'
 
+def main
+	play_game?
+	@initial = Board.new
+	@nextmove = Move.new
+	get_number_players
+	get_player_names
+	players = [@player2, @player1].cycle
+	players.next if player1_starts?
+	loop do
+		current_player = players.next
+	  	play_turn(current_player.name, current_player.letter)
+		main if game_end?(current_player.name, current_player.letter)
+	end
+end
+
 def play_game?
 	puts 'Would you like to play Tic Tac Toe? Type Y to play.'
 	if gets.chomp.upcase == 'Y' 
@@ -17,30 +32,39 @@ def get_number_players
 	if gets.to_i == 1
 		@player1 = Competitor.new('X', 'Human')
 		@player2 = Competitor.new('O', 'Computer')
-		puts "#{@player1.name} is #{@player1.letter}, #{@player2.name} is #{@player2.letter}"
 	else
 		@player1 = Competitor.new('X', 'Player 1')
 		@player2 = Competitor.new('O', 'Player 2')
-		puts 'Player 1 is X, Player 2 is O'
 	end
 end
 
-def main
-	play_game?
-	@initial = Board.new
-	@nextmove = Move.new
-	get_number_players
-	players = [@player1, @player2].cycle
-	loop do
-		current_player = players.next
-	  	play_turn(current_player.name, current_player.letter)
-		main if game_end?(current_player.name)
+def get_player_names
+	if @player2.name == 'Computer'
+		puts "What is your name?"
+		@player1.name = gets.chomp
+	else
+		puts "What is player 1's name?"
+		@player1.name = gets.chomp
+		puts "What is player 2's name?"
+		@player2.name = gets.chomp
+	end
+	puts "#{@player1.name} is #{@player1.letter}, #{@player2.name} is #{@player2.letter}"
+end
+
+def player1_starts?
+	puts "Flipping coin to see who starts..."
+	if rand(2) == 0 
+		puts "#{@player1.name} (#{@player1.letter}) to start"
+		true
+	else
+		puts "#{@player2.name} (#{@player2.letter}) to start"
+		false
 	end
 end
 
 def play_turn(name, letter)
 	@initial.print_board
-	puts "#{name} to go next"
+	puts "#{name} (#{letter}) to go next"
 	potential_position = @nextmove.next_move(name)
 	until @initial.valid_move?(potential_position) do
 	  	 potential_position = @nextmove.next_move(name)
@@ -48,10 +72,10 @@ def play_turn(name, letter)
 	@initial.update(potential_position, letter)
 end
 
-def game_end?(current_player)
+def game_end?(name, letter)
 	if @initial.win?
 	  	@initial.print_board
-	  	puts "#{current_player} wins!"
+	  	puts "#{name} (#{letter}) wins!"
 	  	true
 	elsif @initial.draw?
 	  	@initial.print_board
