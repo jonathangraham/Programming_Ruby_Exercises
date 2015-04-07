@@ -3,18 +3,26 @@ require_relative 'Competitor'
 require_relative 'Move'
 
 def main
-	play_game?
-	@initial = Board.new
-	@nextmove = Move.new
-	get_number_players
-	get_player_names
-	players = [@player2, @player1].cycle
-	players.next if player1_starts?
+	game_setup
+	players = [@player1, @player2].cycle
+	players.next if player1_starts? == false
 	loop do
 		current_player = players.next
-	  	play_turn(current_player.name, current_player.letter)
-		main if game_end?(current_player.name, current_player.letter)
+	  	play_turn(current_player)
+		main if game_end?(current_player)
 	end
+end
+
+def game_setup
+	play_game?
+	initialize_game
+	get_number_players
+	get_player_names
+end
+
+def initialize_game
+	@board = Board.new
+	@nextmove = Move.new
 end
 
 def play_game?
@@ -53,6 +61,7 @@ end
 
 def player1_starts?
 	puts "Flipping coin to see who starts..."
+	sleep 1
 	if rand(2) == 0 
 		puts "#{@player1.name} (#{@player1.letter}) to start"
 		true
@@ -62,23 +71,23 @@ def player1_starts?
 	end
 end
 
-def play_turn(name, letter)
-	@initial.print_board
-	puts "#{name} (#{letter}) to go next"
-	potential_position = @nextmove.next_move(name)
-	until @initial.valid_move?(potential_position) do
-	  	 potential_position = @nextmove.next_move(name)
+def play_turn(player)
+	@board.print_board
+	puts "#{player.name} (#{player.letter}) to go next"
+	if player.name == 'Computer'
+		@nextmove.computer_move(@board, player.letter, 1)
+	else
+		@nextmove.human_move(@board, player.letter)
 	end
-	@initial.update(potential_position, letter)
 end
 
-def game_end?(name, letter)
-	if @initial.win?
-	  	@initial.print_board
-	  	puts "#{name} (#{letter}) wins!"
+def game_end?(player)
+	if @board.win?(player.letter)
+	  	@board.print_board
+	  	puts "#{player.name} (#{player.letter}) wins!"
 	  	true
-	elsif @initial.draw?
-	  	@initial.print_board
+	elsif @board.draw?
+	  	@board.print_board
 	  	puts "draw"
 	  	true
   	end
