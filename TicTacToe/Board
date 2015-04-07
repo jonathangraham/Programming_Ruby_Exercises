@@ -1,12 +1,12 @@
 class Board
 	attr_accessor :data
 	
-	def initialize()
-		@data = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+	def initialize(data)
+		@data = data
 	end
 
-	def potential_winning_lines 
-		[[@data[0],@data[1],@data[2]],[@data[3],@data[4],@data[5]],[@data[6],@data[7],@data[8]],[@data[0],@data[3],@data[6]],[@data[1],@data[4],@data[7]],[@data[2],@data[5],@data[8]],[@data[0],@data[4],@data[8]],[@data[2],@data[4],@data[6]]]
+	def potential_winning_lines(board)
+		[[board[0],board[1],board[2]],[board[3],board[4],board[5]],[board[6],board[7],board[8]],[board[0],board[3],board[6]],[board[1],board[4],board[7]],[board[2],board[5],board[8]],[board[0],board[4],board[8]],[board[2],board[4],board[6]]] 
 	end
 
 	def print_board()
@@ -24,43 +24,51 @@ class Board
 	puts
 	end
 
-	def valid_move?(suggested_position)
-		if @data[suggested_position - 1] == ' '
+	def valid_move?(board, suggested_position)
+		if suggested_position > 0 && board[suggested_position - 1] == ' '
 			true
+		else
+			false
 		end
 	end
 
-	def update(suggested_position, letter)
-		@data[suggested_position - 1].replace letter
+	def update(board, suggested_position, letter)
+		board[suggested_position - 1].replace letter
 	end
 
-	def un_update(suggested_position)
-		@data[suggested_position - 1].replace ' '
+	def un_update(board, suggested_position)
+		board[suggested_position - 1].replace ' '
 	end
 
-	def game_over?(player)
-		draw? || win?(player)
+	def game_over?(board, player)
+		draw?(board) || win?(board, player)
 	end
 
-	def draw?()
-		@data.count(' ') == 0
+	def draw?(board)
+		board.count(' ') == 0
 	end
 
-	def win?(player)
-		arrayOfBools = potential_winning_lines.map do |innerArray|
+	def win?(board, player)
+		arrayOfBools = potential_winning_lines(board).map do |innerArray|
 			allCharsSame?(innerArray, player)  
 		end
 		if arrayOfBools.include? true 
 			true
+		else 
+			false
 		end
 	end
 
 	def allCharsSame?(arr,findChar)
 		matchedCharsFound = arr.select{|x| x == findChar}
-		matchedCharsFound.length == arr.length
+		if matchedCharsFound.length == arr.length
+			true
+		else
+			false
+		end
 	end
 
-	def available_spaces()
-		@data.each_index.select{|i| @data[i] == ' '}
+	def available_spaces(board)
+		board.each_index.select{|i| board[i] == ' '}
 	end
 end
