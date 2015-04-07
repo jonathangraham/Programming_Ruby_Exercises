@@ -1,8 +1,8 @@
 class Board
 	attr_accessor :data
 	
-	def initialize() 
-		@data = [' ', ' ', ' ', ' ', ' ', ' ',' ', ' ', ' ']
+	def initialize()
+		@data = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
 	end
 
 	def potential_winning_lines 
@@ -13,32 +13,42 @@ class Board
 	puts
 	puts 'Current Board:      '									'Board Positions:'
 	puts '   |   |            '									'   |   |   '	
-	puts " #{@data[0]} | #{@data[1]} | #{@data[2]}          "					' 1 | 2 | 3 '
+	puts " #{@data[0]} | #{@data[1]} | #{@data[2]}          "	' 1 | 2 | 3 '
 	puts '___|___|___         '									'___|___|___'
 	puts '   |   |            '									'   |   |   '
-	puts " #{@data[3]} | #{@data[4]} | #{@data[5]}          "					' 4 | 5 | 6 '
+	puts " #{@data[3]} | #{@data[4]} | #{@data[5]}          "	' 4 | 5 | 6 '
 	puts '___|___|___         '									'___|___|___'
 	puts '   |   |            '									'   |   |   '	
-	puts " #{@data[6]} | #{@data[7]} | #{@data[8]}          "					' 7 | 8 | 9 '
+	puts " #{@data[6]} | #{@data[7]} | #{@data[8]}          "	' 7 | 8 | 9 '
 	puts '   |   |            '									'   |   |   '
 	puts
 	end
 
 	def valid_move?(suggested_position)
-		@data[suggested_position - 1] == ' '
+		if @data[suggested_position - 1] == ' '
+			true
+		end
 	end
 
-	def update(suggested_position, player)
-		@data[suggested_position - 1].replace player
+	def update(suggested_position, letter)
+		@data[suggested_position - 1].replace letter
+	end
+
+	def un_update(suggested_position)
+		@data[suggested_position - 1].replace ' '
+	end
+
+	def game_over?(player)
+		draw? || win?(player)
 	end
 
 	def draw?()
 		@data.count(' ') == 0
 	end
 
-	def win?()
+	def win?(player)
 		arrayOfBools = potential_winning_lines.map do |innerArray|
-			allCharsSame?(innerArray, 'X') || allCharsSame?(innerArray, 'O')   
+			allCharsSame?(innerArray, player)  
 		end
 		if arrayOfBools.include? true 
 			true
@@ -48,5 +58,9 @@ class Board
 	def allCharsSame?(arr,findChar)
 		matchedCharsFound = arr.select{|x| x == findChar}
 		matchedCharsFound.length == arr.length
+	end
+
+	def available_spaces()
+		@data.each_index.select{|i| @data[i] == ' '}
 	end
 end
