@@ -9,7 +9,7 @@ def main
 	loop do
 		current_player = players.next
 	  	play_turn(current_player)
-		main if game_end?(current_player)
+		main if game_end?(@board, current_player)
 	end
 end
 
@@ -21,7 +21,7 @@ def game_setup
 end
 
 def initialize_game
-	@board = Board.new
+	@board = Board.new([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
 	@nextmove = Move.new
 end
 
@@ -75,19 +75,19 @@ def play_turn(player)
 	@board.print_board
 	puts "#{player.name} (#{player.letter}) to go next"
 	if player.name == 'Computer'
-		@nextmove.computer_move(@board, player.letter, 1)
+		@nextmove.computer_move(@board, player.letter)
 	else
 		@nextmove.human_move(@board, player.letter)
 	end
 end
 
-def game_end?(player)
-	if @board.win?(player.letter)
-	  	@board.print_board
+def game_end?(board, player)
+	if 	board.win?(board.data, player.letter)
+	  	board.print_board
 	  	puts "#{player.name} (#{player.letter}) wins!"
 	  	true
-	elsif @board.draw?
-	  	@board.print_board
+	elsif board.draw?(board.data)
+	  	board.print_board
 	  	puts "draw"
 	  	true
   	end
