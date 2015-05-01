@@ -1,6 +1,5 @@
 require_relative 'Board'
 require_relative 'Competitor'
-require_relative 'Move'
 
 def main
 	game_setup
@@ -17,12 +16,10 @@ def game_setup
 	play_game?
 	initialize_game
 	get_number_players
-	get_player_names
 end
 
 def initialize_game
 	@board = Board.new([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
-	@nextmove = Move.new
 end
 
 def play_game?
@@ -38,28 +35,16 @@ end
 def get_number_players
 	puts 'How many players? Choose 1 or 2'
 	if gets.to_i == 1
-		@player1 = Competitor.new('X', 'Human')
-		@player2 = Competitor.new('O', 'Computer')
+		@player1 = Human.new('X')
+		@player2 = Computer.new('O')
 	else
-		@player1 = Competitor.new('X', 'Player 1')
-		@player2 = Competitor.new('O', 'Player 2')
+		@player1 = Human.new('X')
+		@player2 = Human.new('O')
 	end
-end
-
-def get_player_names
-	if @player2.name == 'Computer'
-		puts "What is your name?"
-		@player1.name = gets.chomp
-	else
-		puts "What is player 1's name?"
-		@player1.name = gets.chomp
-		puts "What is player 2's name?"
-		@player2.name = gets.chomp
-	end
-	puts "#{@player1.name} is #{@player1.letter}, #{@player2.name} is #{@player2.letter}"
 end
 
 def player1_starts?
+	puts "#{@player1.name} is #{@player1.letter}, #{@player2.name} is #{@player2.letter}"
 	puts "Flipping coin to see who starts..."
 	sleep 1
 	if rand(2) == 0 
@@ -74,11 +59,7 @@ end
 def play_turn(player)
 	@board.print_board
 	puts "#{player.name} (#{player.letter}) to go next"
-	if player.name == 'Computer'
-		@nextmove.computer_move(@board, player.letter)
-	else
-		@nextmove.human_move(@board, player.letter)
-	end
+	player.move(@board)
 end
 
 def game_end?(board, player)
