@@ -1,0 +1,49 @@
+require_relative 'Competitor'
+require_relative 'Board'
+require 'minitest/autorun'
+
+class TestCompetitor < Minitest::Test
+
+	Computer_X = Computer.new("X")
+	Computer_O = Computer.new("O")
+
+	def test_computer_move_first
+		board_initial = Board.new([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
+		assert_equal(1, (Computer_X.determine_play_method(board_initial))%2)
+	end
+
+	def test_computer_move_to_win
+		board1 = Board.new(['X', ' ', 'O', 'X', 'O', 'X', ' ', ' ', 'O'])
+		board2 = Board.new(['X', 'O', ' ', 'O', 'X', ' ', ' ', ' ', ' '])
+		assert_equal(7, Computer_X.determine_play_method(board1))
+		assert_equal(7, Computer_O.determine_play_method(board1))
+		assert_equal(9, Computer_X.determine_play_method(board2))
+	end
+
+	def test_computer_move_to_block
+		board1 = Board.new(['X', 'O', 'X', ' ', 'O', ' ', ' ', ' ', ' '])
+		board2 = Board.new(['X', 'O', ' ', 'O', 'X', ' ', ' ', ' ', ' '])
+		assert_equal(8, Computer_X.determine_play_method(board1))
+		assert_equal(9, Computer_O.determine_play_method(board2))
+	end
+
+	def test_computer_move_win_instead_block
+		board1 = Board.new(['X', ' ', 'O', 'X', ' ', 'O', ' ', ' ', ' '])
+		board2 = Board.new(['X', 'X', ' ', 'O', 'O', ' ', ' ', ' ', ' '])
+		assert_equal(7, Computer_X.determine_play_method(board1))
+		assert_equal(9, Computer_O.determine_play_method(board1))
+		assert_equal(3, Computer_X.determine_play_method(board2))
+		assert_equal(6, Computer_O.determine_play_method(board2))
+	end
+
+	def test_computer_move_fork
+		board1 = Board.new(['O', ' ', ' ', ' ', ' ', ' ', 'X', 'O', 'X'])
+		assert_equal(3, Computer_X.determine_play_method(board1))
+		assert_equal(2, Computer_O.determine_play_method(board1))
+	end
+
+	def test_computer_move_block_fork
+		board1 = Board.new([' ', ' ', 'O', ' ', 'X', ' ', 'O', ' ', ' '])
+		assert_equal(2, Computer_X.determine_play_method(board1))
+	end
+end
